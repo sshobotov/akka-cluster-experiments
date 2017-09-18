@@ -48,12 +48,14 @@ class SessionDataBufferedSender(
       if (bufferedMessages.size == maxBufferedMessages || bufferedBytes >= maxBufferedBytes) {
         flush()
       }
+      persist(UpdatedState(bufferedMessages)) { _ => }
 
     case ReceiveTimeout =>
       if (hasUpdates) {
         hasUpdates = false
       } else if (bufferedMessages.nonEmpty) {
         flush()
+        persist(UpdatedState(bufferedMessages)) { _ => }
       }
   }
 
